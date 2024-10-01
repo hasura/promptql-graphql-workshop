@@ -1,0 +1,256 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Address
+  description: >-
+    The address table contains address information for customers, staff, and
+    stores.
+
+
+    The address table primary key appears as a foreign key in the customer, staff, and store tables.
+  fields:
+    - name: address
+      type: Varchar!
+      description: " The first line of an address."
+    - name: addressId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each address in
+        the table."
+    - name: address2
+      type: Varchar
+      description: " An optional second line of an address."
+    - name: cityId
+      type: Int4!
+      description: " A foreign key pointing to the city table."
+    - name: district
+      type: Varchar!
+      description: " The region of an address, this may be a state, province,
+        prefecture, etc."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: phone
+      type: Varchar!
+      description: " The telephone number for the address."
+    - name: postalCode
+      type: Varchar
+      description: " The postal code or ZIP code of the address (where applicable)."
+  graphql:
+    typeName: Address
+    inputTypeName: AddressInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: address
+      fieldMapping:
+        address:
+          column:
+            name: address
+        addressId:
+          column:
+            name: address_id
+        address2:
+          column:
+            name: address2
+        cityId:
+          column:
+            name: city_id
+        district:
+          column:
+            name: district
+        lastUpdate:
+          column:
+            name: last_update
+        phone:
+          column:
+            name: phone
+        postalCode:
+          column:
+            name: postal_code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Address
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - addressId
+          - address2
+          - cityId
+          - district
+          - lastUpdate
+          - phone
+          - postalCode
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: AddressBoolExp
+  objectType: Address
+  dataConnectorName: postgres
+  dataConnectorObjectType: address
+  comparableFields:
+    - fieldName: address
+      operators:
+        enableAll: true
+    - fieldName: addressId
+      operators:
+        enableAll: true
+    - fieldName: address2
+      operators:
+        enableAll: true
+    - fieldName: cityId
+      operators:
+        enableAll: true
+    - fieldName: district
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: phone
+      operators:
+        enableAll: true
+    - fieldName: postalCode
+      operators:
+        enableAll: true
+  graphql:
+    typeName: AddressBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Address
+  objectType: Address
+  source:
+    dataConnectorName: postgres
+    collection: address
+  filterExpressionType: AddressBoolExp
+  orderableFields:
+    - fieldName: address
+      orderByDirections:
+        enableAll: true
+    - fieldName: addressId
+      orderByDirections:
+        enableAll: true
+    - fieldName: address2
+      orderByDirections:
+        enableAll: true
+    - fieldName: cityId
+      orderByDirections:
+        enableAll: true
+    - fieldName: district
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: phone
+      orderByDirections:
+        enableAll: true
+    - fieldName: postalCode
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: address
+    selectUniques:
+      - queryRootField: addressByAddressId
+        uniqueIdentifier:
+          - addressId
+    orderByExpressionType: AddressOrderBy
+  description: >-
+    The address table contains address information for customers, staff, and
+    stores.
+
+
+    The address table primary key appears as a foreign key in the customer, staff, and store tables.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Address
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: city
+  sourceType: Address
+  target:
+    model:
+      name: City
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cityId
+      target:
+        modelField:
+          - fieldName: cityId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customers
+  sourceType: Address
+  target:
+    model:
+      name: Customer
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staffs
+  sourceType: Address
+  target:
+    model:
+      name: Staff
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stores
+  sourceType: Address
+  target:
+    model:
+      name: Store
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+

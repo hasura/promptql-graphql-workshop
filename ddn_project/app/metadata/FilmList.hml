@@ -1,0 +1,134 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FilmList
+  fields:
+    - name: actors
+      type: Text
+    - name: category
+      type: Varchar
+    - name: description
+      type: Text
+    - name: fid
+      type: Int4
+    - name: length
+      type: Int2
+    - name: price
+      type: Numeric
+    - name: rating
+      type: MpaaRating
+    - name: title
+      type: Varchar
+  graphql:
+    typeName: FilmList
+    inputTypeName: FilmListInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: film_list
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FilmList
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actors
+          - category
+          - description
+          - fid
+          - length
+          - price
+          - rating
+          - title
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: FilmListBoolExp
+  objectType: FilmList
+  dataConnectorName: postgres
+  dataConnectorObjectType: film_list
+  comparableFields:
+    - fieldName: actors
+      operators:
+        enableAll: true
+    - fieldName: category
+      operators:
+        enableAll: true
+    - fieldName: description
+      operators:
+        enableAll: true
+    - fieldName: fid
+      operators:
+        enableAll: true
+    - fieldName: length
+      operators:
+        enableAll: true
+    - fieldName: price
+      operators:
+        enableAll: true
+    - fieldName: rating
+      operators:
+        enableAll: true
+    - fieldName: title
+      operators:
+        enableAll: true
+  graphql:
+    typeName: FilmListBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: FilmList
+  objectType: FilmList
+  source:
+    dataConnectorName: postgres
+    collection: film_list
+  filterExpressionType: FilmListBoolExp
+  orderableFields:
+    - fieldName: actors
+      orderByDirections:
+        enableAll: true
+    - fieldName: category
+      orderByDirections:
+        enableAll: true
+    - fieldName: description
+      orderByDirections:
+        enableAll: true
+    - fieldName: fid
+      orderByDirections:
+        enableAll: true
+    - fieldName: length
+      orderByDirections:
+        enableAll: true
+    - fieldName: price
+      orderByDirections:
+        enableAll: true
+    - fieldName: rating
+      orderByDirections:
+        enableAll: true
+    - fieldName: title
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: filmList
+    selectUniques: []
+    orderByExpressionType: FilmListOrderBy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FilmList
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

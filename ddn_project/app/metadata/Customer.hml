@@ -1,0 +1,391 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Customer
+  description: >-
+    The customer table contains a list of all customers.
+
+
+    The customer table is referred to in the payment and rental tables and refers to the address and store tables using foreign keys.
+  fields:
+    - name: active
+      type: Int4
+      description: " Indicates whether the customer is an active customer. Setting
+        this to FALSE serves as an alternative to deleting a customer outright.
+        Most queries should have a WHERE active = TRUE clause."
+    - name: activebool
+      type: Bool!
+    - name: addressId
+      type: Int4!
+      description: " A foreign key identifying the customer address in the address table."
+    - name: createDate
+      type: Date!
+      description: " The date the customer was added to the system. This date is
+        automatically set using a trigger during an INSERT."
+    - name: customerId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each customer
+        in the table."
+    - name: email
+      type: Varchar
+      description: " The customer email address."
+    - name: firstName
+      type: Varchar!
+      description: " The customer first name."
+    - name: lastName
+      type: Varchar!
+      description: " The customer last name."
+    - name: lastUpdate
+      type: Timestamp
+      description: " When the row was created or most recently updated."
+    - name: storeId
+      type: Int4!
+      description: " A foreign key identifying the customer “home store.” Customers
+        are not limited to renting only from this store, but this is the store
+        at which they generally shop."
+  graphql:
+    typeName: Customer
+    inputTypeName: CustomerInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: customer
+      fieldMapping:
+        active:
+          column:
+            name: active
+        activebool:
+          column:
+            name: activebool
+        addressId:
+          column:
+            name: address_id
+        createDate:
+          column:
+            name: create_date
+        customerId:
+          column:
+            name: customer_id
+        email:
+          column:
+            name: email
+        firstName:
+          column:
+            name: first_name
+        lastName:
+          column:
+            name: last_name
+        lastUpdate:
+          column:
+            name: last_update
+        storeId:
+          column:
+            name: store_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Customer
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - activebool
+          - addressId
+          - createDate
+          - customerId
+          - email
+          - firstName
+          - lastName
+          - lastUpdate
+          - storeId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: CustomerBoolExp
+  objectType: Customer
+  dataConnectorName: postgres
+  dataConnectorObjectType: customer
+  comparableFields:
+    - fieldName: active
+      operators:
+        enableAll: true
+    - fieldName: activebool
+      operators:
+        enableAll: true
+    - fieldName: addressId
+      operators:
+        enableAll: true
+    - fieldName: createDate
+      operators:
+        enableAll: true
+    - fieldName: customerId
+      operators:
+        enableAll: true
+    - fieldName: email
+      operators:
+        enableAll: true
+    - fieldName: firstName
+      operators:
+        enableAll: true
+    - fieldName: lastName
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: storeId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: CustomerBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Customer
+  objectType: Customer
+  source:
+    dataConnectorName: postgres
+    collection: customer
+  filterExpressionType: CustomerBoolExp
+  orderableFields:
+    - fieldName: active
+      orderByDirections:
+        enableAll: true
+    - fieldName: activebool
+      orderByDirections:
+        enableAll: true
+    - fieldName: addressId
+      orderByDirections:
+        enableAll: true
+    - fieldName: createDate
+      orderByDirections:
+        enableAll: true
+    - fieldName: customerId
+      orderByDirections:
+        enableAll: true
+    - fieldName: email
+      orderByDirections:
+        enableAll: true
+    - fieldName: firstName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: storeId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: customer
+    selectUniques:
+      - queryRootField: customerByCustomerId
+        uniqueIdentifier:
+          - customerId
+    orderByExpressionType: CustomerOrderBy
+  description: >-
+    The customer table contains a list of all customers.
+
+
+    The customer table is referred to in the payment and rental tables and refers to the address and store tables using foreign keys.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Customer
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: address
+  sourceType: Customer
+  target:
+    model:
+      name: Address
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: store
+  sourceType: Customer
+  target:
+    model:
+      name: Store
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payments
+  sourceType: Customer
+  target:
+    model:
+      name: Payment
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200701S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200701
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200702S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200702
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200703S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200703
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200704S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200704
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200705S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200705
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200706S
+  sourceType: Customer
+  target:
+    model:
+      name: PaymentP200706
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: rentals
+  sourceType: Customer
+  target:
+    model:
+      name: Rental
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+

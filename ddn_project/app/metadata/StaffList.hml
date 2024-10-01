@@ -1,0 +1,159 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StaffList
+  fields:
+    - name: address
+      type: Varchar
+    - name: city
+      type: Varchar
+    - name: country
+      type: Varchar
+    - name: id
+      type: Int4
+    - name: name
+      type: Text
+    - name: phone
+      type: Varchar
+    - name: sid
+      type: Int4
+    - name: zipCode
+      type: Varchar
+  graphql:
+    typeName: StaffList
+    inputTypeName: StaffListInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: staff_list
+      fieldMapping:
+        address:
+          column:
+            name: address
+        city:
+          column:
+            name: city
+        country:
+          column:
+            name: country
+        id:
+          column:
+            name: id
+        name:
+          column:
+            name: name
+        phone:
+          column:
+            name: phone
+        sid:
+          column:
+            name: sid
+        zipCode:
+          column:
+            name: zip code
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StaffList
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - address
+          - city
+          - country
+          - id
+          - name
+          - phone
+          - sid
+          - zipCode
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: StaffListBoolExp
+  objectType: StaffList
+  dataConnectorName: postgres
+  dataConnectorObjectType: staff_list
+  comparableFields:
+    - fieldName: address
+      operators:
+        enableAll: true
+    - fieldName: city
+      operators:
+        enableAll: true
+    - fieldName: country
+      operators:
+        enableAll: true
+    - fieldName: id
+      operators:
+        enableAll: true
+    - fieldName: name
+      operators:
+        enableAll: true
+    - fieldName: phone
+      operators:
+        enableAll: true
+    - fieldName: sid
+      operators:
+        enableAll: true
+    - fieldName: zipCode
+      operators:
+        enableAll: true
+  graphql:
+    typeName: StaffListBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: StaffList
+  objectType: StaffList
+  source:
+    dataConnectorName: postgres
+    collection: staff_list
+  filterExpressionType: StaffListBoolExp
+  orderableFields:
+    - fieldName: address
+      orderByDirections:
+        enableAll: true
+    - fieldName: city
+      orderByDirections:
+        enableAll: true
+    - fieldName: country
+      orderByDirections:
+        enableAll: true
+    - fieldName: id
+      orderByDirections:
+        enableAll: true
+    - fieldName: name
+      orderByDirections:
+        enableAll: true
+    - fieldName: phone
+      orderByDirections:
+        enableAll: true
+    - fieldName: sid
+      orderByDirections:
+        enableAll: true
+    - fieldName: zipCode
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: staffList
+    selectUniques: []
+    orderByExpressionType: StaffListOrderBy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StaffList
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

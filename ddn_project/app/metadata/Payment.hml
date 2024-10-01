@@ -1,0 +1,214 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Payment
+  description: >-
+    The payment table records each payment made by a customer, with information
+    such as the amount and the rental being paid for (when applicable).
+
+
+    The payment table refers to the customer, rental, and staff tables.
+  fields:
+    - name: amount
+      type: Numeric!
+      description: " The amount of the payment."
+    - name: customerId
+      type: Int4!
+      description: " The customer whose balance the payment is being applied to. This
+        is a foreign key reference to the customer table."
+    - name: paymentDate
+      type: Timestamp!
+      description: " The date the payment was processed."
+    - name: paymentId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each payment."
+    - name: rentalId
+      type: Int4!
+      description: " The rental that the payment is being applied to. This is optional
+        because some payments are for outstanding fees and may not be directly
+        related to a rental."
+    - name: staffId
+      type: Int4!
+      description: " The staff member who processed the payment. This is a foreign key
+        reference to the staff table."
+  graphql:
+    typeName: Payment
+    inputTypeName: PaymentInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: payment
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        customerId:
+          column:
+            name: customer_id
+        paymentDate:
+          column:
+            name: payment_date
+        paymentId:
+          column:
+            name: payment_id
+        rentalId:
+          column:
+            name: rental_id
+        staffId:
+          column:
+            name: staff_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Payment
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - customerId
+          - paymentDate
+          - paymentId
+          - rentalId
+          - staffId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: PaymentBoolExp
+  objectType: Payment
+  dataConnectorName: postgres
+  dataConnectorObjectType: payment
+  comparableFields:
+    - fieldName: amount
+      operators:
+        enableAll: true
+    - fieldName: customerId
+      operators:
+        enableAll: true
+    - fieldName: paymentDate
+      operators:
+        enableAll: true
+    - fieldName: paymentId
+      operators:
+        enableAll: true
+    - fieldName: rentalId
+      operators:
+        enableAll: true
+    - fieldName: staffId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: PaymentBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Payment
+  objectType: Payment
+  source:
+    dataConnectorName: postgres
+    collection: payment
+  filterExpressionType: PaymentBoolExp
+  orderableFields:
+    - fieldName: amount
+      orderByDirections:
+        enableAll: true
+    - fieldName: customerId
+      orderByDirections:
+        enableAll: true
+    - fieldName: paymentDate
+      orderByDirections:
+        enableAll: true
+    - fieldName: paymentId
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalId
+      orderByDirections:
+        enableAll: true
+    - fieldName: staffId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: payment
+    selectUniques:
+      - queryRootField: paymentByPaymentId
+        uniqueIdentifier:
+          - paymentId
+    orderByExpressionType: PaymentOrderBy
+  description: >-
+    The payment table records each payment made by a customer, with information
+    such as the amount and the rental being paid for (when applicable).
+
+
+    The payment table refers to the customer, rental, and staff tables.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Payment
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customer
+  sourceType: Payment
+  target:
+    model:
+      name: Customer
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: rental
+  sourceType: Payment
+  target:
+    model:
+      name: Rental
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staff
+  sourceType: Payment
+  target:
+    model:
+      name: Staff
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+

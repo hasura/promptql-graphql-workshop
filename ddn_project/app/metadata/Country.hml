@@ -1,0 +1,132 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Country
+  description: |-
+    The country table contains a list of countries.
+
+    The country table is referred to by a foreign key in the city table.
+  fields:
+    - name: country
+      type: Varchar!
+      description: " The name of the country."
+    - name: countryId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each country in
+        the table."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+  graphql:
+    typeName: Country
+    inputTypeName: CountryInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: country
+      fieldMapping:
+        country:
+          column:
+            name: country
+        countryId:
+          column:
+            name: country_id
+        lastUpdate:
+          column:
+            name: last_update
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Country
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - country
+          - countryId
+          - lastUpdate
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: CountryBoolExp
+  objectType: Country
+  dataConnectorName: postgres
+  dataConnectorObjectType: country
+  comparableFields:
+    - fieldName: country
+      operators:
+        enableAll: true
+    - fieldName: countryId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+  graphql:
+    typeName: CountryBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Country
+  objectType: Country
+  source:
+    dataConnectorName: postgres
+    collection: country
+  filterExpressionType: CountryBoolExp
+  orderableFields:
+    - fieldName: country
+      orderByDirections:
+        enableAll: true
+    - fieldName: countryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: country
+    selectUniques:
+      - queryRootField: countryByCountryId
+        uniqueIdentifier:
+          - countryId
+    orderByExpressionType: CountryOrderBy
+  description: |-
+    The country table contains a list of countries.
+
+    The country table is referred to by a foreign key in the city table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Country
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: cities
+  sourceType: Country
+  target:
+    model:
+      name: City
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: countryId
+      target:
+        modelField:
+          - fieldName: countryId
+

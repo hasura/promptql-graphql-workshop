@@ -1,0 +1,351 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Rental
+  description: >-
+    The rental table contains one row for each rental of each inventory item
+    with information about who rented what item, when it was rented, and when it
+    was returned.
+
+
+    The rental table refers to the inventory, customer, and staff tables and is referred to by the payment table.
+  fields:
+    - name: customerId
+      type: Int4!
+      description: " The customer renting the item."
+    - name: inventoryId
+      type: Int4!
+      description: " The item being rented."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: rentalDate
+      type: Timestamp!
+      description: " The date and time that the item was rented."
+    - name: rentalId
+      type: Int4!
+      description: " A surrogate primary key that uniquely identifies the rental."
+    - name: returnDate
+      type: Timestamp
+      description: " The date and time the item was returned."
+    - name: staffId
+      type: Int4!
+      description: " The staff member who processed the rental."
+  graphql:
+    typeName: Rental
+    inputTypeName: RentalInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: rental
+      fieldMapping:
+        customerId:
+          column:
+            name: customer_id
+        inventoryId:
+          column:
+            name: inventory_id
+        lastUpdate:
+          column:
+            name: last_update
+        rentalDate:
+          column:
+            name: rental_date
+        rentalId:
+          column:
+            name: rental_id
+        returnDate:
+          column:
+            name: return_date
+        staffId:
+          column:
+            name: staff_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Rental
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - customerId
+          - inventoryId
+          - lastUpdate
+          - rentalDate
+          - rentalId
+          - returnDate
+          - staffId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: RentalBoolExp
+  objectType: Rental
+  dataConnectorName: postgres
+  dataConnectorObjectType: rental
+  comparableFields:
+    - fieldName: customerId
+      operators:
+        enableAll: true
+    - fieldName: inventoryId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: rentalDate
+      operators:
+        enableAll: true
+    - fieldName: rentalId
+      operators:
+        enableAll: true
+    - fieldName: returnDate
+      operators:
+        enableAll: true
+    - fieldName: staffId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: RentalBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Rental
+  objectType: Rental
+  source:
+    dataConnectorName: postgres
+    collection: rental
+  filterExpressionType: RentalBoolExp
+  orderableFields:
+    - fieldName: customerId
+      orderByDirections:
+        enableAll: true
+    - fieldName: inventoryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalDate
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalId
+      orderByDirections:
+        enableAll: true
+    - fieldName: returnDate
+      orderByDirections:
+        enableAll: true
+    - fieldName: staffId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: rental
+    selectUniques:
+      - queryRootField: rentalByRentalId
+        uniqueIdentifier:
+          - rentalId
+    orderByExpressionType: RentalOrderBy
+  description: >-
+    The rental table contains one row for each rental of each inventory item
+    with information about who rented what item, when it was rented, and when it
+    was returned.
+
+
+    The rental table refers to the inventory, customer, and staff tables and is referred to by the payment table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Rental
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payments
+  sourceType: Rental
+  target:
+    model:
+      name: Payment
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200701S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200701
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200702S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200702
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200703S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200703
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200704S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200704
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200705S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200705
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200706S
+  sourceType: Rental
+  target:
+    model:
+      name: PaymentP200706
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customer
+  sourceType: Rental
+  target:
+    model:
+      name: Customer
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: inventory
+  sourceType: Rental
+  target:
+    model:
+      name: Inventory
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: inventoryId
+      target:
+        modelField:
+          - fieldName: inventoryId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staff
+  sourceType: Rental
+  target:
+    model:
+      name: Staff
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+

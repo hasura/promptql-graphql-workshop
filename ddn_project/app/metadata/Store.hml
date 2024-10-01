@@ -1,0 +1,220 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Store
+  description: >-
+    The store table lists all stores in the system. All inventory is assigned to
+    specific stores, and staff and customers are assigned a “home store”.
+
+
+    The store table refers to the staff and address tables using foreign keys and is referred to by the staff, customer, and inventory tables.
+  fields:
+    - name: addressId
+      type: Int4!
+      description: " A foreign key identifying the address of this store."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: managerStaffId
+      type: Int4!
+      description: " A foreign key identifying the manager of this store."
+    - name: storeId
+      type: Int4!
+      description: " A surrogate primary key that uniquely identifies the store."
+  graphql:
+    typeName: Store
+    inputTypeName: StoreInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: store
+      fieldMapping:
+        addressId:
+          column:
+            name: address_id
+        lastUpdate:
+          column:
+            name: last_update
+        managerStaffId:
+          column:
+            name: manager_staff_id
+        storeId:
+          column:
+            name: store_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Store
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - addressId
+          - lastUpdate
+          - managerStaffId
+          - storeId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: StoreBoolExp
+  objectType: Store
+  dataConnectorName: postgres
+  dataConnectorObjectType: store
+  comparableFields:
+    - fieldName: addressId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: managerStaffId
+      operators:
+        enableAll: true
+    - fieldName: storeId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: StoreBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Store
+  objectType: Store
+  source:
+    dataConnectorName: postgres
+    collection: store
+  filterExpressionType: StoreBoolExp
+  orderableFields:
+    - fieldName: addressId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: managerStaffId
+      orderByDirections:
+        enableAll: true
+    - fieldName: storeId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: store
+    selectUniques:
+      - queryRootField: storeByStoreId
+        uniqueIdentifier:
+          - storeId
+    orderByExpressionType: StoreOrderBy
+  description: >-
+    The store table lists all stores in the system. All inventory is assigned to
+    specific stores, and staff and customers are assigned a “home store”.
+
+
+    The store table refers to the staff and address tables using foreign keys and is referred to by the staff, customer, and inventory tables.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Store
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customers
+  sourceType: Store
+  target:
+    model:
+      name: Customer
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: inventories
+  sourceType: Store
+  target:
+    model:
+      name: Inventory
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staffs
+  sourceType: Store
+  target:
+    model:
+      name: Staff
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: address
+  sourceType: Store
+  target:
+    model:
+      name: Address
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staff
+  sourceType: Store
+  target:
+    model:
+      name: Staff
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: managerStaffId
+      target:
+        modelField:
+          - fieldName: staffId
+

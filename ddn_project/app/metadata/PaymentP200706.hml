@@ -1,0 +1,189 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PaymentP200706
+  fields:
+    - name: amount
+      type: Numeric!
+    - name: customerId
+      type: Int4!
+    - name: paymentDate
+      type: Timestamp!
+    - name: paymentId
+      type: Int4!
+    - name: rentalId
+      type: Int4!
+    - name: staffId
+      type: Int4!
+  graphql:
+    typeName: PaymentP200706
+    inputTypeName: PaymentP200706Input
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: payment_p2007_06
+      fieldMapping:
+        amount:
+          column:
+            name: amount
+        customerId:
+          column:
+            name: customer_id
+        paymentDate:
+          column:
+            name: payment_date
+        paymentId:
+          column:
+            name: payment_id
+        rentalId:
+          column:
+            name: rental_id
+        staffId:
+          column:
+            name: staff_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PaymentP200706
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - amount
+          - customerId
+          - paymentDate
+          - paymentId
+          - rentalId
+          - staffId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: PaymentP200706BoolExp
+  objectType: PaymentP200706
+  dataConnectorName: postgres
+  dataConnectorObjectType: payment_p2007_06
+  comparableFields:
+    - fieldName: amount
+      operators:
+        enableAll: true
+    - fieldName: customerId
+      operators:
+        enableAll: true
+    - fieldName: paymentDate
+      operators:
+        enableAll: true
+    - fieldName: paymentId
+      operators:
+        enableAll: true
+    - fieldName: rentalId
+      operators:
+        enableAll: true
+    - fieldName: staffId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: PaymentP200706BoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: PaymentP200706
+  objectType: PaymentP200706
+  source:
+    dataConnectorName: postgres
+    collection: payment_p2007_06
+  filterExpressionType: PaymentP200706BoolExp
+  orderableFields:
+    - fieldName: amount
+      orderByDirections:
+        enableAll: true
+    - fieldName: customerId
+      orderByDirections:
+        enableAll: true
+    - fieldName: paymentDate
+      orderByDirections:
+        enableAll: true
+    - fieldName: paymentId
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalId
+      orderByDirections:
+        enableAll: true
+    - fieldName: staffId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: paymentP200706
+    selectUniques: []
+    orderByExpressionType: PaymentP200706OrderBy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: PaymentP200706
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: customer
+  sourceType: PaymentP200706
+  target:
+    model:
+      name: Customer
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: customerId
+      target:
+        modelField:
+          - fieldName: customerId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: rental
+  sourceType: PaymentP200706
+  target:
+    model:
+      name: Rental
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: rentalId
+      target:
+        modelField:
+          - fieldName: rentalId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: staff
+  sourceType: PaymentP200706
+  target:
+    model:
+      name: Staff
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+

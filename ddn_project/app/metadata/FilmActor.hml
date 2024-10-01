@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FilmActor
+  description: >-
+    The film_actor table is used to support a many-to-many relationship between
+    films and actors. For each actor in a given film, there will be one row in
+    the film_actor table listing the actor and film.
+
+
+    The film_actor table refers to the film and actor tables using foreign keys.
+  fields:
+    - name: actorId
+      type: Int4!
+      description: " A foreign key identifying the actor."
+    - name: filmId
+      type: Int4!
+      description: " A foreign key identifying the film."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+  graphql:
+    typeName: FilmActor
+    inputTypeName: FilmActorInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: film_actor
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        filmId:
+          column:
+            name: film_id
+        lastUpdate:
+          column:
+            name: last_update
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FilmActor
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - filmId
+          - lastUpdate
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: FilmActorBoolExp
+  objectType: FilmActor
+  dataConnectorName: postgres
+  dataConnectorObjectType: film_actor
+  comparableFields:
+    - fieldName: actorId
+      operators:
+        enableAll: true
+    - fieldName: filmId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+  graphql:
+    typeName: FilmActorBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: FilmActor
+  objectType: FilmActor
+  source:
+    dataConnectorName: postgres
+    collection: film_actor
+  filterExpressionType: FilmActorBoolExp
+  orderableFields:
+    - fieldName: actorId
+      orderByDirections:
+        enableAll: true
+    - fieldName: filmId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: filmActor
+    selectUniques:
+      - queryRootField: filmActorByFilmActorPkey
+        uniqueIdentifier:
+          - actorId
+          - filmId
+    orderByExpressionType: FilmActorOrderBy
+  description: >-
+    The film_actor table is used to support a many-to-many relationship between
+    films and actors. For each actor in a given film, there will be one row in
+    the film_actor table listing the actor and film.
+
+
+    The film_actor table refers to the film and actor tables using foreign keys.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FilmActor
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: actor
+  sourceType: FilmActor
+  target:
+    model:
+      name: Actor
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: actorId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: film
+  sourceType: FilmActor
+  target:
+    model:
+      name: Film
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+

@@ -1,0 +1,156 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: FilmCategory
+  description: >-
+    The film_category table is used to support a many-to-many relationship
+    between films and categories. For each category applied to a film, there
+    will be one row in the film_category table listing the category and film.
+
+
+    The film_category table refers to the film and category tables using foreign keys.
+  fields:
+    - name: categoryId
+      type: Int4!
+      description: " A foreign key identifying the category."
+    - name: filmId
+      type: Int4!
+      description: " A foreign key identifying the film."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+  graphql:
+    typeName: FilmCategory
+    inputTypeName: FilmCategoryInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: film_category
+      fieldMapping:
+        categoryId:
+          column:
+            name: category_id
+        filmId:
+          column:
+            name: film_id
+        lastUpdate:
+          column:
+            name: last_update
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: FilmCategory
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - categoryId
+          - filmId
+          - lastUpdate
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: FilmCategoryBoolExp
+  objectType: FilmCategory
+  dataConnectorName: postgres
+  dataConnectorObjectType: film_category
+  comparableFields:
+    - fieldName: categoryId
+      operators:
+        enableAll: true
+    - fieldName: filmId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+  graphql:
+    typeName: FilmCategoryBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: FilmCategory
+  objectType: FilmCategory
+  source:
+    dataConnectorName: postgres
+    collection: film_category
+  filterExpressionType: FilmCategoryBoolExp
+  orderableFields:
+    - fieldName: categoryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: filmId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: filmCategory
+    selectUniques:
+      - queryRootField: filmCategoryByFilmCategoryPkey
+        uniqueIdentifier:
+          - categoryId
+          - filmId
+    orderByExpressionType: FilmCategoryOrderBy
+  description: >-
+    The film_category table is used to support a many-to-many relationship
+    between films and categories. For each category applied to a film, there
+    will be one row in the film_category table listing the category and film.
+
+
+    The film_category table refers to the film and category tables using foreign keys.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: FilmCategory
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: category
+  sourceType: FilmCategory
+  target:
+    model:
+      name: Category
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: categoryId
+      target:
+        modelField:
+          - fieldName: categoryId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: film
+  sourceType: FilmCategory
+  target:
+    model:
+      name: Film
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+

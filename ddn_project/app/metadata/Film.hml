@@ -1,0 +1,360 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Film
+  description: >-
+    The film table is a list of all films potentially in stock in the stores.
+    The actual in-stock copies of each film are represented in the inventory
+    table.
+
+
+    The film table refers to the language table and is referred to by the film_category, film_actor, and inventory tables.
+  fields:
+    - name: description
+      type: Text
+      description: " A short description or plot summary of the film."
+    - name: filmId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each film in
+        the table."
+    - name: fulltext
+      type: Tsvector!
+    - name: languageId
+      type: Int4!
+      description: " A foreign key pointing at the language table; identifies the
+        language of the film."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: length
+      type: Int2
+      description: " The duration of the film, in minutes."
+    - name: originalLanguageId
+      type: Int4
+      description: " A foreign key pointing at the language table; identifies the
+        original language of the film. Used when a film has been dubbed into a
+        new language."
+    - name: rating
+      type: MpaaRating
+      description: " The rating assigned to the film. Can be one of: G, PG, PG-13, R,
+        or NC-17."
+    - name: releaseYear
+      type: Year
+      description: " The year in which the movie was released."
+    - name: rentalDuration
+      type: Int2!
+      description: " The length of the rental period, in days."
+    - name: rentalRate
+      type: Numeric!
+      description: " The cost to rent the film for the period specified in the
+        rental_duration column."
+    - name: replacementCost
+      type: Numeric!
+      description: " The amount charged to the customer if the film is not returned or
+        is returned in a damaged state."
+    - name: specialFeatures
+      type: "[Text]"
+      description: " Lists which common special features are included on the DVD. Can
+        be zero or more of: Trailers, Commentaries, Deleted Scenes, Behind the
+        Scenes."
+    - name: title
+      type: Varchar!
+      description: " The title of the film."
+  graphql:
+    typeName: Film
+    inputTypeName: FilmInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: film
+      fieldMapping:
+        description:
+          column:
+            name: description
+        filmId:
+          column:
+            name: film_id
+        fulltext:
+          column:
+            name: fulltext
+        languageId:
+          column:
+            name: language_id
+        lastUpdate:
+          column:
+            name: last_update
+        length:
+          column:
+            name: length
+        originalLanguageId:
+          column:
+            name: original_language_id
+        rating:
+          column:
+            name: rating
+        releaseYear:
+          column:
+            name: release_year
+        rentalDuration:
+          column:
+            name: rental_duration
+        rentalRate:
+          column:
+            name: rental_rate
+        replacementCost:
+          column:
+            name: replacement_cost
+        specialFeatures:
+          column:
+            name: special_features
+        title:
+          column:
+            name: title
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Film
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - description
+          - filmId
+          - fulltext
+          - languageId
+          - lastUpdate
+          - length
+          - originalLanguageId
+          - rating
+          - releaseYear
+          - rentalDuration
+          - rentalRate
+          - replacementCost
+          - specialFeatures
+          - title
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: FilmBoolExp
+  objectType: Film
+  dataConnectorName: postgres
+  dataConnectorObjectType: film
+  comparableFields:
+    - fieldName: description
+      operators:
+        enableAll: true
+    - fieldName: filmId
+      operators:
+        enableAll: true
+    - fieldName: fulltext
+      operators:
+        enableAll: true
+    - fieldName: languageId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: length
+      operators:
+        enableAll: true
+    - fieldName: originalLanguageId
+      operators:
+        enableAll: true
+    - fieldName: rating
+      operators:
+        enableAll: true
+    - fieldName: releaseYear
+      operators:
+        enableAll: true
+    - fieldName: rentalDuration
+      operators:
+        enableAll: true
+    - fieldName: rentalRate
+      operators:
+        enableAll: true
+    - fieldName: replacementCost
+      operators:
+        enableAll: true
+    - fieldName: specialFeatures
+      operators:
+        enableAll: true
+    - fieldName: title
+      operators:
+        enableAll: true
+  graphql:
+    typeName: FilmBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Film
+  objectType: Film
+  source:
+    dataConnectorName: postgres
+    collection: film
+  filterExpressionType: FilmBoolExp
+  orderableFields:
+    - fieldName: description
+      orderByDirections:
+        enableAll: true
+    - fieldName: filmId
+      orderByDirections:
+        enableAll: true
+    - fieldName: fulltext
+      orderByDirections:
+        enableAll: true
+    - fieldName: languageId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: length
+      orderByDirections:
+        enableAll: true
+    - fieldName: originalLanguageId
+      orderByDirections:
+        enableAll: true
+    - fieldName: rating
+      orderByDirections:
+        enableAll: true
+    - fieldName: releaseYear
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalDuration
+      orderByDirections:
+        enableAll: true
+    - fieldName: rentalRate
+      orderByDirections:
+        enableAll: true
+    - fieldName: replacementCost
+      orderByDirections:
+        enableAll: true
+    - fieldName: specialFeatures
+      orderByDirections:
+        enableAll: true
+    - fieldName: title
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: film
+    selectUniques:
+      - queryRootField: filmByFilmId
+        uniqueIdentifier:
+          - filmId
+    orderByExpressionType: FilmOrderBy
+  description: >-
+    The film table is a list of all films potentially in stock in the stores.
+    The actual in-stock copies of each film are represented in the inventory
+    table.
+
+
+    The film table refers to the language table and is referred to by the film_category, film_actor, and inventory tables.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Film
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: language
+  sourceType: Film
+  target:
+    model:
+      name: Language
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: languageId
+      target:
+        modelField:
+          - fieldName: languageId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: languageByOriginalLanguageId
+  sourceType: Film
+  target:
+    model:
+      name: Language
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: originalLanguageId
+      target:
+        modelField:
+          - fieldName: languageId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filmActors
+  sourceType: Film
+  target:
+    model:
+      name: FilmActor
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filmCategories
+  sourceType: Film
+  target:
+    model:
+      name: FilmCategory
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: inventories
+  sourceType: Film
+  target:
+    model:
+      name: Inventory
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+

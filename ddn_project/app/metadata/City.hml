@@ -1,0 +1,165 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: City
+  description: >-
+    The city table contains a list of cities.
+
+
+    The city table is referred to by a foreign key in the address table and refers to the country table using a foreign key.
+  fields:
+    - name: city
+      type: Varchar!
+      description: " The name of the city."
+    - name: cityId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each city in
+        the table."
+    - name: countryId
+      type: Int4!
+      description: " A foreign key identifying the country that the city belongs to."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+  graphql:
+    typeName: City
+    inputTypeName: CityInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: city
+      fieldMapping:
+        city:
+          column:
+            name: city
+        cityId:
+          column:
+            name: city_id
+        countryId:
+          column:
+            name: country_id
+        lastUpdate:
+          column:
+            name: last_update
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: City
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - city
+          - cityId
+          - countryId
+          - lastUpdate
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: CityBoolExp
+  objectType: City
+  dataConnectorName: postgres
+  dataConnectorObjectType: city
+  comparableFields:
+    - fieldName: city
+      operators:
+        enableAll: true
+    - fieldName: cityId
+      operators:
+        enableAll: true
+    - fieldName: countryId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+  graphql:
+    typeName: CityBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: City
+  objectType: City
+  source:
+    dataConnectorName: postgres
+    collection: city
+  filterExpressionType: CityBoolExp
+  orderableFields:
+    - fieldName: city
+      orderByDirections:
+        enableAll: true
+    - fieldName: cityId
+      orderByDirections:
+        enableAll: true
+    - fieldName: countryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: city
+    selectUniques:
+      - queryRootField: cityByCityId
+        uniqueIdentifier:
+          - cityId
+    orderByExpressionType: CityOrderBy
+  description: >-
+    The city table contains a list of cities.
+
+
+    The city table is referred to by a foreign key in the address table and refers to the country table using a foreign key.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: City
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: addresses
+  sourceType: City
+  target:
+    model:
+      name: Address
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: cityId
+      target:
+        modelField:
+          - fieldName: cityId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: country
+  sourceType: City
+  target:
+    model:
+      name: Country
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: countryId
+      target:
+        modelField:
+          - fieldName: countryId
+

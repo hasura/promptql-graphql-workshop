@@ -1,0 +1,147 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Actor
+  description: >-
+    The actor table lists information for all actors.
+
+
+    The actor table is joined to the film table by means of the film_actor table.
+  fields:
+    - name: actorId
+      type: Int4!
+      description: A surrogate primary key used to uniquely identify each actor in the
+        table.
+    - name: firstName
+      type: Varchar!
+      description: The actor first name.
+    - name: lastName
+      type: Varchar!
+      description: The actor last name.
+    - name: lastUpdate
+      type: Timestamp!
+      description: When the row was created or most recently updated.
+  graphql:
+    typeName: Actor
+    inputTypeName: ActorInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: actor
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        firstName:
+          column:
+            name: first_name
+        lastName:
+          column:
+            name: last_name
+        lastUpdate:
+          column:
+            name: last_update
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Actor
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - firstName
+          - lastName
+          - lastUpdate
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: ActorBoolExp
+  objectType: Actor
+  dataConnectorName: postgres
+  dataConnectorObjectType: actor
+  comparableFields:
+    - fieldName: actorId
+      operators:
+        enableAll: true
+    - fieldName: firstName
+      operators:
+        enableAll: true
+    - fieldName: lastName
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+  graphql:
+    typeName: ActorBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Actor
+  objectType: Actor
+  source:
+    dataConnectorName: postgres
+    collection: actor
+  filterExpressionType: ActorBoolExp
+  orderableFields:
+    - fieldName: actorId
+      orderByDirections:
+        enableAll: true
+    - fieldName: firstName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: actor
+    selectUniques:
+      - queryRootField: actorByActorId
+        uniqueIdentifier:
+          - actorId
+    orderByExpressionType: ActorOrderBy
+  description: >-
+    The actor table lists information for all actors.
+
+
+    The actor table is joined to the film table by means of the film_actor table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Actor
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filmActors
+  sourceType: Actor
+  target:
+    model:
+      name: FilmActor
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: actorId
+      target:
+        modelField:
+          - fieldName: actorId
+

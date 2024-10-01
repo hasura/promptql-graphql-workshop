@@ -1,0 +1,87 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SalesByFilmCategory
+  fields:
+    - name: category
+      type: Varchar
+    - name: totalSales
+      type: Numeric
+  graphql:
+    typeName: SalesByFilmCategory
+    inputTypeName: SalesByFilmCategoryInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: sales_by_film_category
+      fieldMapping:
+        category:
+          column:
+            name: category
+        totalSales:
+          column:
+            name: total_sales
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SalesByFilmCategory
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - category
+          - totalSales
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: SalesByFilmCategoryBoolExp
+  objectType: SalesByFilmCategory
+  dataConnectorName: postgres
+  dataConnectorObjectType: sales_by_film_category
+  comparableFields:
+    - fieldName: category
+      operators:
+        enableAll: true
+    - fieldName: totalSales
+      operators:
+        enableAll: true
+  graphql:
+    typeName: SalesByFilmCategoryBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: SalesByFilmCategory
+  objectType: SalesByFilmCategory
+  source:
+    dataConnectorName: postgres
+    collection: sales_by_film_category
+  filterExpressionType: SalesByFilmCategoryBoolExp
+  orderableFields:
+    - fieldName: category
+      orderByDirections:
+        enableAll: true
+    - fieldName: totalSales
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: salesByFilmCategory
+    selectUniques: []
+    orderByExpressionType: SalesByFilmCategoryOrderBy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: SalesByFilmCategory
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

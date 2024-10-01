@@ -1,0 +1,111 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ActorInfo
+  fields:
+    - name: actorId
+      type: Int4
+    - name: filmInfo
+      type: Text
+    - name: firstName
+      type: Varchar
+    - name: lastName
+      type: Varchar
+  graphql:
+    typeName: ActorInfo
+    inputTypeName: ActorInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: actor_info
+      fieldMapping:
+        actorId:
+          column:
+            name: actor_id
+        filmInfo:
+          column:
+            name: film_info
+        firstName:
+          column:
+            name: first_name
+        lastName:
+          column:
+            name: last_name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ActorInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - actorId
+          - filmInfo
+          - firstName
+          - lastName
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: ActorInfoBoolExp
+  objectType: ActorInfo
+  dataConnectorName: postgres
+  dataConnectorObjectType: actor_info
+  comparableFields:
+    - fieldName: actorId
+      operators:
+        enableAll: true
+    - fieldName: filmInfo
+      operators:
+        enableAll: true
+    - fieldName: firstName
+      operators:
+        enableAll: true
+    - fieldName: lastName
+      operators:
+        enableAll: true
+  graphql:
+    typeName: ActorInfoBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: ActorInfo
+  objectType: ActorInfo
+  source:
+    dataConnectorName: postgres
+    collection: actor_info
+  filterExpressionType: ActorInfoBoolExp
+  orderableFields:
+    - fieldName: actorId
+      orderByDirections:
+        enableAll: true
+    - fieldName: filmInfo
+      orderByDirections:
+        enableAll: true
+    - fieldName: firstName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastName
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: actorInfo
+    selectUniques: []
+    orderByExpressionType: ActorInfoOrderBy
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: ActorInfo
+  permissions:
+    - role: admin
+      select:
+        filter: null
+

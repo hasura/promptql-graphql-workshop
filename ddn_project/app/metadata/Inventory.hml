@@ -1,0 +1,185 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Inventory
+  description: >-
+    The inventory table contains one row for each copy of a given film in a
+    given store.
+
+
+    The inventory table refers to the film and store tables using foreign keys and is referred to by the rental table.
+  fields:
+    - name: filmId
+      type: Int4!
+      description: " A foreign key pointing to the film this item represents."
+    - name: inventoryId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each item in
+        inventory."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: storeId
+      type: Int4!
+      description: " A foreign key pointing to the store stocking this item."
+  graphql:
+    typeName: Inventory
+    inputTypeName: InventoryInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: inventory
+      fieldMapping:
+        filmId:
+          column:
+            name: film_id
+        inventoryId:
+          column:
+            name: inventory_id
+        lastUpdate:
+          column:
+            name: last_update
+        storeId:
+          column:
+            name: store_id
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Inventory
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - filmId
+          - inventoryId
+          - lastUpdate
+          - storeId
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: InventoryBoolExp
+  objectType: Inventory
+  dataConnectorName: postgres
+  dataConnectorObjectType: inventory
+  comparableFields:
+    - fieldName: filmId
+      operators:
+        enableAll: true
+    - fieldName: inventoryId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: storeId
+      operators:
+        enableAll: true
+  graphql:
+    typeName: InventoryBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Inventory
+  objectType: Inventory
+  source:
+    dataConnectorName: postgres
+    collection: inventory
+  filterExpressionType: InventoryBoolExp
+  orderableFields:
+    - fieldName: filmId
+      orderByDirections:
+        enableAll: true
+    - fieldName: inventoryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: storeId
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: inventory
+    selectUniques:
+      - queryRootField: inventoryByInventoryId
+        uniqueIdentifier:
+          - inventoryId
+    orderByExpressionType: InventoryOrderBy
+  description: >-
+    The inventory table contains one row for each copy of a given film in a
+    given store.
+
+
+    The inventory table refers to the film and store tables using foreign keys and is referred to by the rental table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Inventory
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: film
+  sourceType: Inventory
+  target:
+    model:
+      name: Film
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: filmId
+      target:
+        modelField:
+          - fieldName: filmId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: store
+  sourceType: Inventory
+  target:
+    model:
+      name: Store
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: rentals
+  sourceType: Inventory
+  target:
+    model:
+      name: Rental
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: inventoryId
+      target:
+        modelField:
+          - fieldName: inventoryId
+

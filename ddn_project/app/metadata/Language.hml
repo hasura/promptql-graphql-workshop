@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Language
+  description: >-
+    The language table is a lookup table listing the possible languages that
+    films can have for their language and original language values.
+
+
+    The language table is referred to by the film table.
+  fields:
+    - name: languageId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each language."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: name
+      type: Bpchar!
+      description: " The English name of the language."
+  graphql:
+    typeName: Language
+    inputTypeName: LanguageInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: language
+      fieldMapping:
+        languageId:
+          column:
+            name: language_id
+        lastUpdate:
+          column:
+            name: last_update
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Language
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - languageId
+          - lastUpdate
+          - name
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: LanguageBoolExp
+  objectType: Language
+  dataConnectorName: postgres
+  dataConnectorObjectType: language
+  comparableFields:
+    - fieldName: languageId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: name
+      operators:
+        enableAll: true
+  graphql:
+    typeName: LanguageBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Language
+  objectType: Language
+  source:
+    dataConnectorName: postgres
+    collection: language
+  filterExpressionType: LanguageBoolExp
+  orderableFields:
+    - fieldName: languageId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: name
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: language
+    selectUniques:
+      - queryRootField: languageByLanguageId
+        uniqueIdentifier:
+          - languageId
+    orderByExpressionType: LanguageOrderBy
+  description: >-
+    The language table is a lookup table listing the possible languages that
+    films can have for their language and original language values.
+
+
+    The language table is referred to by the film table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Language
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: films
+  sourceType: Language
+  target:
+    model:
+      name: Film
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: languageId
+      target:
+        modelField:
+          - fieldName: languageId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filmsByOriginalLanguageId
+  sourceType: Language
+  target:
+    model:
+      name: Film
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: languageId
+      target:
+        modelField:
+          - fieldName: originalLanguageId
+

@@ -1,0 +1,424 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Staff
+  description: >-
+    The staff table lists all staff members, including information for email
+    address, login information, and picture.
+
+
+    The staff table refers to the store and address tables using foreign keys, and is referred to by the rental, payment, and store tables.
+  fields:
+    - name: active
+      type: Bool!
+      description: " Whether this is an active employee. If employees leave, their
+        rows are not deleted from this table; instead, this column is set to
+        FALSE."
+    - name: addressId
+      type: Int4!
+      description: " A foreign key to the staff member address in the address table."
+    - name: email
+      type: Varchar
+      description: " The staff member email address."
+    - name: firstName
+      type: Varchar!
+      description: " The first name of the staff member."
+    - name: lastName
+      type: Varchar!
+      description: " The last name of the staff member."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: password
+      type: Varchar
+      description: " The password used by the staff member to access the rental
+        system. The password should be stored as a hash using the SHA2()
+        function."
+    - name: picture
+      type: Bytea
+      description: " A BLOB containing a photograph of the employee."
+    - name: staffId
+      type: Int4!
+      description: " A surrogate primary key that uniquely identifies the staff member."
+    - name: storeId
+      type: Int4!
+      description: " The staff member “home store.” The employee can work at other
+        stores but is generally assigned to the store listed."
+    - name: username
+      type: Varchar!
+      description: " The user name used by the staff member to access the rental system."
+  graphql:
+    typeName: Staff
+    inputTypeName: StaffInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: staff
+      fieldMapping:
+        active:
+          column:
+            name: active
+        addressId:
+          column:
+            name: address_id
+        email:
+          column:
+            name: email
+        firstName:
+          column:
+            name: first_name
+        lastName:
+          column:
+            name: last_name
+        lastUpdate:
+          column:
+            name: last_update
+        password:
+          column:
+            name: password
+        picture:
+          column:
+            name: picture
+        staffId:
+          column:
+            name: staff_id
+        storeId:
+          column:
+            name: store_id
+        username:
+          column:
+            name: username
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Staff
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - active
+          - addressId
+          - email
+          - firstName
+          - lastName
+          - lastUpdate
+          - password
+          - picture
+          - staffId
+          - storeId
+          - username
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: StaffBoolExp
+  objectType: Staff
+  dataConnectorName: postgres
+  dataConnectorObjectType: staff
+  comparableFields:
+    - fieldName: active
+      operators:
+        enableAll: true
+    - fieldName: addressId
+      operators:
+        enableAll: true
+    - fieldName: email
+      operators:
+        enableAll: true
+    - fieldName: firstName
+      operators:
+        enableAll: true
+    - fieldName: lastName
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: password
+      operators:
+        enableAll: true
+    - fieldName: picture
+      operators:
+        enableAll: true
+    - fieldName: staffId
+      operators:
+        enableAll: true
+    - fieldName: storeId
+      operators:
+        enableAll: true
+    - fieldName: username
+      operators:
+        enableAll: true
+  graphql:
+    typeName: StaffBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Staff
+  objectType: Staff
+  source:
+    dataConnectorName: postgres
+    collection: staff
+  filterExpressionType: StaffBoolExp
+  orderableFields:
+    - fieldName: active
+      orderByDirections:
+        enableAll: true
+    - fieldName: addressId
+      orderByDirections:
+        enableAll: true
+    - fieldName: email
+      orderByDirections:
+        enableAll: true
+    - fieldName: firstName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastName
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: password
+      orderByDirections:
+        enableAll: true
+    - fieldName: picture
+      orderByDirections:
+        enableAll: true
+    - fieldName: staffId
+      orderByDirections:
+        enableAll: true
+    - fieldName: storeId
+      orderByDirections:
+        enableAll: true
+    - fieldName: username
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: staff
+    selectUniques:
+      - queryRootField: staffByStaffId
+        uniqueIdentifier:
+          - staffId
+    orderByExpressionType: StaffOrderBy
+  description: >-
+    The staff table lists all staff members, including information for email
+    address, login information, and picture.
+
+
+    The staff table refers to the store and address tables using foreign keys, and is referred to by the rental, payment, and store tables.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Staff
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: payments
+  sourceType: Staff
+  target:
+    model:
+      name: Payment
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200701S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200701
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200702S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200702
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200703S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200703
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200704S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200704
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200705S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200705
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: paymentP200706S
+  sourceType: Staff
+  target:
+    model:
+      name: PaymentP200706
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: rentals
+  sourceType: Staff
+  target:
+    model:
+      name: Rental
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: staffId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: address
+  sourceType: Staff
+  target:
+    model:
+      name: Address
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: addressId
+      target:
+        modelField:
+          - fieldName: addressId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: store
+  sourceType: Staff
+  target:
+    model:
+      name: Store
+      relationshipType: Object
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: storeId
+      target:
+        modelField:
+          - fieldName: storeId
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: stores
+  sourceType: Staff
+  target:
+    model:
+      name: Store
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: staffId
+      target:
+        modelField:
+          - fieldName: managerStaffId
+

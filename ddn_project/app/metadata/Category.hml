@@ -1,0 +1,134 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: Category
+  description: >-
+    The category table lists the categories that can be assigned to a film.
+
+
+    The category table is joined to the film table by means of the film_category table.
+  fields:
+    - name: categoryId
+      type: Int4!
+      description: " A surrogate primary key used to uniquely identify each category
+        in the table."
+    - name: lastUpdate
+      type: Timestamp!
+      description: " When the row was created or most recently updated."
+    - name: name
+      type: Varchar!
+      description: " The name of the category."
+  graphql:
+    typeName: Category
+    inputTypeName: CategoryInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: postgres
+      dataConnectorObjectType: category
+      fieldMapping:
+        categoryId:
+          column:
+            name: category_id
+        lastUpdate:
+          column:
+            name: last_update
+        name:
+          column:
+            name: name
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: Category
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - categoryId
+          - lastUpdate
+          - name
+
+---
+kind: ObjectBooleanExpressionType
+version: v1
+definition:
+  name: CategoryBoolExp
+  objectType: Category
+  dataConnectorName: postgres
+  dataConnectorObjectType: category
+  comparableFields:
+    - fieldName: categoryId
+      operators:
+        enableAll: true
+    - fieldName: lastUpdate
+      operators:
+        enableAll: true
+    - fieldName: name
+      operators:
+        enableAll: true
+  graphql:
+    typeName: CategoryBoolExp
+
+---
+kind: Model
+version: v1
+definition:
+  name: Category
+  objectType: Category
+  source:
+    dataConnectorName: postgres
+    collection: category
+  filterExpressionType: CategoryBoolExp
+  orderableFields:
+    - fieldName: categoryId
+      orderByDirections:
+        enableAll: true
+    - fieldName: lastUpdate
+      orderByDirections:
+        enableAll: true
+    - fieldName: name
+      orderByDirections:
+        enableAll: true
+  graphql:
+    selectMany:
+      queryRootField: category
+    selectUniques:
+      - queryRootField: categoryByCategoryId
+        uniqueIdentifier:
+          - categoryId
+    orderByExpressionType: CategoryOrderBy
+  description: >-
+    The category table lists the categories that can be assigned to a film.
+
+
+    The category table is joined to the film table by means of the film_category table.
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: Category
+  permissions:
+    - role: admin
+      select:
+        filter: null
+
+---
+kind: Relationship
+version: v1
+definition:
+  name: filmCategories
+  sourceType: Category
+  target:
+    model:
+      name: FilmCategory
+      relationshipType: Array
+  mapping:
+    - source:
+        fieldPath:
+          - fieldName: categoryId
+      target:
+        modelField:
+          - fieldName: categoryId
+
